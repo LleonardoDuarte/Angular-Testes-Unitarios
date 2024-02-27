@@ -473,4 +473,14 @@ Apartir dai quando se clicar no botao ele direcionara para a página desejada
 
   # Testes unitários
 
-  -
+  - Para testes unitarios com Angular usaremos as bibliotecas karma e jasmine. Karma é um test runner do proprio javascript, já o jasmine é um framework para escrever testes com codigo javascript, iremos escrever nossos testes com jasmine.
+
+  - Dentro de um teste unitario antes de realizar a descrição dos trstes usa-se o beforEach para instanciar algum módulo ou importação de algum componente necessário para a realização do teste, para isso usamos uma async function e await. No caso do TesteBed é um componente necessário para a inicialização das configurações dos testes unitários
+
+  - Para gerar o incializador de teste no terminal usa-se normalmente o ng test, porem usando ng test --code-coverage o angular nos traz maiores informaçoes que podem ser melhores do que usando apenas o angular test. No caso do ng test --code-coverage o proprio angular te mostra o que voce nao testou para que voce consiga assim organizar os testes e deixar seu software 100% testado.
+
+  - Depois da configuração do módulo de testes vem a descrição dos testes em sí onde e composto pelo it que pode ser traduzido como um "teste isso" seguido de ('descrição simples do que vai testar', arrow function { e a lógica aqui dentro})
+
+  - Para realizar nosso primeiro teste criaremos um componente chamado banking que terá algumas funções a serem testadas, nessas funções basicamente criamos um sistema de banco onde atraves do input digitado o valor é adicionado de um input para o outro, um valor referenciando uma poupança e a outra a carteira do cliente.
+
+  

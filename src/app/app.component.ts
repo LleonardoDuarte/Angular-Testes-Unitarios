@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  template: `<router-outlet></router-outlet>`,
+  template: ` <app-banking></app-banking>
+    <router-outlet></router-outlet>`,
 })
-export class AppComponent {
-  title = 'Angular-Testes-Unitarios';
-}
+export class AppComponent {}
