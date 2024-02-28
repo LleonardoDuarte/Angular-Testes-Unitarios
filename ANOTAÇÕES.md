@@ -481,6 +481,75 @@ Apartir dai quando se clicar no botao ele direcionara para a página desejada
 
   - Depois da configuração do módulo de testes vem a descrição dos testes em sí onde e composto pelo it que pode ser traduzido como um "teste isso" seguido de ('descrição simples do que vai testar', arrow function { e a lógica aqui dentro})
 
+  - Se ficar na duvida qual componente faltou ser testado basta entrar na pasta coverage, entrar no index.HTML e ir para o live server onde poderá entrar e ser indicado pelo jasmine
+
   - Para realizar nosso primeiro teste criaremos um componente chamado banking que terá algumas funções a serem testadas, nessas funções basicamente criamos um sistema de banco onde atraves do input digitado o valor é adicionado de um input para o outro, um valor referenciando uma poupança e a outra a carteira do cliente.
 
-  
+  - O primeiro teste que iremos criar na nossa aplicação será do nosso getPoupança que é uma função que tem como objetivo pegar o valor da variavel poupanca,iremos verificar se o valor que ele pegou é realmente o valor da poupanca:
+    it('(U) getPoupanca(): should poupanca have value 10', () => {
+    expect(component.getPoupanca).toEqual(10);
+    });
+
+  - Agora vamos verificar se nossa carteira realmente tem o valor de 50:
+    it('(U) getCarteira() should have carteira = 50', () => {
+    expect(component.getCarteira).toEqual(50);
+    });
+
+  - Terceiro teste irá testar se o setSacar está transferindo os valores para a poupança:
+    it(`(U) setSacar: should transfer poupanca from carteira`, () => {
+    component.setSacar('10');
+    fixture.detectChanges();
+
+    expect(component.getPoupanca).toEqual(0);
+    expect(component.getCarteira).toEqual(60);
+    });
+
+  OBS: Nesse teste o '10' do setSacar tem que ser como string pois ele só converte dentro da funcionalidade
+
+  - Quarto teste ira testar se o setDepositar esta transferindo os valores para a poupanca:
+    it('(U) setDepositar(): should transfer carteira from poupanca', () => {
+    component.setDepositar('50');
+    fixture.detectChanges();
+        expect(component.getCarteira).toEqual(0);
+        expect(component.getPoupanca).toEqual(60);
+
+    });
+    };
+
+- Aqui eu testo so dois if's de cada funcionalidade:
+  it('(U) setSacar(): should transfer poupanca dont have string (isNaN) or poupanca < value...', () => {
+    expect(component.setSacar('string')).not.toBeTruthy();
+    expect(component.setSacar('100')).not.toBeTruthy();
+    expect(component.getPoupanca).toEqual(10);
+    expect(component.getCarteira).toEqual(50);
+  });
+
+  it('(U) setDepositar(): should transfer poupanca dont have string (isNaN) or poupanca < value...', () => {
+    expect(component.setDepositar('string')).not.toBeTruthy();
+    expect(component.setDepositar('100')).not.toBeTruthy();
+    expect(component.getPoupanca).toEqual(10);
+    expect(component.getCarteira).toEqual(50);
+  });
+
+  - Aqui realizamos alguns testes de tela para verificar se no HTML realmente os valores que testamos estáo sendo passados de forma correta.
+
+    it('(I) setDepositar(): should transfer carteira from poupanca in HTML', () => {
+    let element = fixture.debugElement.nativeElement;
+    element.querySelector('#input-depositar').value = '10';
+    element.querySelector('#depositar').click();
+    fixture.detectChanges();
+
+    expect(element.querySelector('#get-poupanca').textContent).toEqual(' 20 ');
+ 
+
+    Obs: Nesse teste para verificar os valores de HTML foi necessario colocar id's nos componentes para poder puxar as tags para realizar o teste, importante salientar que só sera possivel o teste funcionar se adicionarmos os espaços antes do numero no toEqual, isso porque quando salvamos a interpolation {{}} ele coloca um espaço antes e depois.
+
+    - Aqui fizemos o mesmo teste porem trocando os id's e verificando se nossa carteira está recebendo o valor do saque.
+      it('(I) setSacar(): should transfer poupanca from html in HTML', () => {
+    let element = fixture.debugElement.nativeElement;
+    element.querySelector('#input-sacar').value = '10';
+    element.querySelector('#sacar').click();
+    fixture.detectChanges();
+    expect(element.querySelector('#get-carteira').textContent).toEqual(' 60 ');
+  });
+  });

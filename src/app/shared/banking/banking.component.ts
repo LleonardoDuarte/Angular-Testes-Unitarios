@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BankingComponent implements OnInit {
   private poupanca: number = 10;
-  private carteira: number = 10;
+  private carteira: number = 50;
   constructor() {}
 
   ngOnInit(): void {}
