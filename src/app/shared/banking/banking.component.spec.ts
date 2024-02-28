@@ -2,13 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BankingComponent } from './banking.component';
 
+import { ListComponent } from '../investiments/components/list/list.component';
+
 describe('BankingComponent', () => {
   let component: BankingComponent;
   let fixture: ComponentFixture<BankingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [BankingComponent],
+      declarations: [BankingComponent, ListComponent],
     }).compileComponents();
   });
 
@@ -73,7 +75,9 @@ describe('BankingComponent', () => {
     element.querySelector('#depositar').click();
     fixture.detectChanges();
 
-    expect(element.querySelector('#get-poupanca').textContent).toEqual(' 20 ');
+    expect(element.querySelector('#get-poupanca').textContent.trim()).toEqual(
+      '20'
+    );
     expect(component.getCarteira).toEqual(40);
   });
 
@@ -83,7 +87,9 @@ describe('BankingComponent', () => {
     element.querySelector('#sacar').click();
     fixture.detectChanges();
 
-    expect(element.querySelector('#get-carteira').textContent).toEqual(' 60 ');
+    expect(element.querySelector('#get-carteira').textContent.trim()).toEqual(
+      '60'
+    );
 
     expect(component.getPoupanca).toEqual(0);
   });

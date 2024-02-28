@@ -510,25 +510,25 @@ Apartir dai quando se clicar no botao ele direcionara para a página desejada
     it('(U) setDepositar(): should transfer carteira from poupanca', () => {
     component.setDepositar('50');
     fixture.detectChanges();
-        expect(component.getCarteira).toEqual(0);
-        expect(component.getPoupanca).toEqual(60);
+    expect(component.getCarteira).toEqual(0);
+    expect(component.getPoupanca).toEqual(60);
 
     });
     };
 
 - Aqui eu testo so dois if's de cada funcionalidade:
   it('(U) setSacar(): should transfer poupanca dont have string (isNaN) or poupanca < value...', () => {
-    expect(component.setSacar('string')).not.toBeTruthy();
-    expect(component.setSacar('100')).not.toBeTruthy();
-    expect(component.getPoupanca).toEqual(10);
-    expect(component.getCarteira).toEqual(50);
+  expect(component.setSacar('string')).not.toBeTruthy();
+  expect(component.setSacar('100')).not.toBeTruthy();
+  expect(component.getPoupanca).toEqual(10);
+  expect(component.getCarteira).toEqual(50);
   });
 
   it('(U) setDepositar(): should transfer poupanca dont have string (isNaN) or poupanca < value...', () => {
-    expect(component.setDepositar('string')).not.toBeTruthy();
-    expect(component.setDepositar('100')).not.toBeTruthy();
-    expect(component.getPoupanca).toEqual(10);
-    expect(component.getCarteira).toEqual(50);
+  expect(component.setDepositar('string')).not.toBeTruthy();
+  expect(component.setDepositar('100')).not.toBeTruthy();
+  expect(component.getPoupanca).toEqual(10);
+  expect(component.getCarteira).toEqual(50);
   });
 
   - Aqui realizamos alguns testes de tela para verificar se no HTML realmente os valores que testamos estáo sendo passados de forma correta.
@@ -540,16 +540,30 @@ Apartir dai quando se clicar no botao ele direcionara para a página desejada
     fixture.detectChanges();
 
     expect(element.querySelector('#get-poupanca').textContent).toEqual(' 20 ');
- 
 
     Obs: Nesse teste para verificar os valores de HTML foi necessario colocar id's nos componentes para poder puxar as tags para realizar o teste, importante salientar que só sera possivel o teste funcionar se adicionarmos os espaços antes do numero no toEqual, isso porque quando salvamos a interpolation {{}} ele coloca um espaço antes e depois.
 
     - Aqui fizemos o mesmo teste porem trocando os id's e verificando se nossa carteira está recebendo o valor do saque.
       it('(I) setSacar(): should transfer poupanca from html in HTML', () => {
-    let element = fixture.debugElement.nativeElement;
-    element.querySelector('#input-sacar').value = '10';
-    element.querySelector('#sacar').click();
-    fixture.detectChanges();
-    expect(element.querySelector('#get-carteira').textContent).toEqual(' 60 ');
-  });
-  });
+      let element = fixture.debugElement.nativeElement;
+      element.querySelector('#input-sacar').value = '10';
+      element.querySelector('#sacar').click();
+      fixture.detectChanges();
+      expect(element.querySelector('#get-carteira').textContent).toEqual(' 60 ');
+      });
+      });
+
+  # Testes Unitários utilizando um Service
+
+  - Primeiro passo será criar um novo componente chamado investiments, esse componente contem um array de objetos tipado e trabalharemos com ele por enquanto, para começarmos os testes quando olhamos o terminal de testes ele ja alerta que é necessario verificar esse novo componente pois o angular ainda nao o reconhece na aba de testes, para isso devemos importar seu seletor dentro do declarations do arquivo spec de banking que é nosso componente principal, todo componente novo criado na mesma sequencia de banking deverá estar importado lá para podermos testar, porem a descrição de testes é feita individualmente em cada componente, a menos que exista alguma interação entre o componente pai e filho que deverá see testada pelo principal.
+
+  - Começando os testes do comnente foram realizados algums verificações de valor e nome no mesmo:
+    it('(U) should list investiments', () => {
+    let investiments = component.investiments;
+    expect(investiments.length).toBe(4);
+    expect(investiments[0].name).toEqual('itaú');
+    });
+
+  - Para teste de tela foram criadas as seguintes verificações:
+
+    importante: Quando temos uma lista e precisamos testar tudo e temos apenas uma classe usamos querySelectorAll que ja fica embutido em todas como todas tem a mesma classe, outra questão é que nao devemos verificar se contem no html igual passamos no unitário pois no html fica em forma de texto, para isso itemos o textContent e assim podemos fazer a verificação. Outra questão é que quando vamos usar os testes de HTML ele considera os espaços antes e depois gerados nas interpolações, para resolver ou usamos espaços no valor ou apos o textContent.trim() usamos o trim que resolve
