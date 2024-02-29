@@ -5,10 +5,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BankingComponent } from './shared/banking/banking.component';
 import { ListComponent } from './shared/investiments/components/list/list.component';
+import {HttpClientModule} from '@angular/common/http'
 
 @NgModule({
   declarations: [AppComponent, BankingComponent, ListComponent],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
 })

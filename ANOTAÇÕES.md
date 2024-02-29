@@ -566,4 +566,149 @@ Apartir dai quando se clicar no botao ele direcionara para a página desejada
 
   - Para teste de tela foram criadas as seguintes verificações:
 
-    importante: Quando temos uma lista e precisamos testar tudo e temos apenas uma classe usamos querySelectorAll que ja fica embutido em todas como todas tem a mesma classe, outra questão é que nao devemos verificar se contem no html igual passamos no unitário pois no html fica em forma de texto, para isso itemos o textContent e assim podemos fazer a verificação. Outra questão é que quando vamos usar os testes de HTML ele considera os espaços antes e depois gerados nas interpolações, para resolver ou usamos espaços no valor ou apos o textContent.trim() usamos o trim que resolve
+    it('(I) should list investiments HTML', () => {
+    let investiments =
+    fixture.debugElement.nativeElement.querySelectorAll('.list-itens');
+    expect(investiments.length).toBe(4);
+    expect(investiments[0].textContent.trim()).toEqual('itaú - 100');
+    });
+
+    importante: Quando temos uma lista e precisamos testar tudo e temos apenas uma classe usamos querySelectorAll que ja fica embutido em todas como todas tem a mesma classe, outra questão é que nao devemos verificar se contem no html igual passamos no unitário pois no html fica em forma de texto, para isso itemos o textContent e assim podemos fazer a verificação. Outra questão é que quando vamos usar os testes de HTML ele considera os espaços antes e depois gerados nas interpolações, para resolver ou usamos espaços no valor ou apos o textContent.trim() usamos o trim que resolve]
+
+    - Começando teste com service primeiramente criaremos um service dentro da pasta investiments, criaremos um método chamado url tipo string com a url que iremos consumir, após isso fazemos a importação do httpclientmodule no nosso app module e chamamos o get atraves do nosso server:
+
+      constructor(private http: HttpClient) {}
+      public list(): Observable<Investiments> {
+      return this.http.get<Investiments>(this.url).pipe(map((res) => res));
+      }
+
+    - Após isso iremos chamar esse service no nosso componente list e verificar em console log se as informaçoes já estão aparecendo:
+
+  constructor(private listInvestiments: ListInvestimentsService) {}
+
+  ngOnInit(): void {
+  this.listInvestiments.list().subscribe((res) => console.log(res));
+  }
+
+- Agora iremos testar nossos serviços para verificar se está tudo ok, importante salientar que nos devemos testar aquilo que fizemos e nao as informaçoes da api porque se a api cair ou algo do tipo isso tratá problemas para a sua aplicação.
+
+- Primeiro passo importamos os testadores de module e controller:
+  import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing'
+
+- Após isso importamos o module dentro de imports no nosso beforEach e para o controler criamos uma variavel para armazenar e depois cadastramos ele para poder usar:
+
+  describe('ListInvestimentsService', () => {
+  let service: ListInvestimentsService;
+  let httpTestingController: HttpTestingController;
+
+  beforeEach(() => {
+  TestBed.configureTestingModule({
+  imports: [HttpClientTestingModule],
+  });
+  httpTestingController = TestBed.inject(HttpTestingController);
+  service = TestBed.inject(ListInvestimentsService);
+  });
+
+  - Para testar as requisições usaremos o HttpClient entao deveremos importa-lo,criar uma variavel para ele e cadastra-lo para usar posteriormente:
+
+    import { HttpClient } from '@angular/common/http';
+    let httpClient:HttpClient
+
+    httpClient = TestBed.inject(HttpClient);
+
+  - Após isso iremos substituir as informaçoes do nosso banking pelas informaçoes vindas da api:
+
+<!-- aqui apagamos o array e colocamos o ! -->
+
+public investiments!: Array<Investiments>;
+
+<!-- Aqui adicionamos a tipagem Array junto de investiments -->
+
+constructor(private http: HttpClient) {}
+public list(): Observable<Array<Investiments>> {
+return this.http.get<Array<Investiments>>(this.url).pipe(map((res) => res));
+}
+
+<!-- Aqui Colocamos as informações vindas da API na nossa variavel investiments. -->
+
+this.listInvestiments.list().subscribe((res) => (this.investiments = res));
+
+- Após isso iniciaremos a criação de um teste, para isso criaremos um mockList com dados parecidos da nossa requisição para verificar se está tudo ok, apartir dai escreveremos o primeiro teste que valida algumas informaçoes do nosso mockList:
+
+  <!--  o done basicamente encerra o teste quando usamos ele ao fim de tudo -->
+
+  it('(U) should be list all investiments', (done) => {
+  service.list().subscribe((res: Array<Investiments>) => {
+  expect(res[0].name).toEqual('Banco 1');
+  expect(res[0].value).toEqual(100);
+
+      expect(res[4].name).toEqual('Banco 5');
+      expect(res[4].value).toEqual(10);
+      done();
+
+  });
+
+  <!-- Nessa parte primeiro ele verifica se a url é igual a passada, e depois no flush digo que o retorno tem que ser nossa mockList -->
+
+  const req = httpTestingController.expectOne(URL);
+  req.flush(mockList);
+
+  <!--  Aqui eu digo que eu espero que o método de requisição seja um get -->
+
+  expect(req.request.method).toEqual('GET');
+  });
+
+  - Agora que testamos no service precisamos testar no componente que está recebendo os dados, para isso primeiro iremos transferir a mockList para um componente isolado dentro da pasta service para podermos importar onde quisermos, depois disso realizaremos o import da mocklist dentro do nosso list component que contem o recebimento dos dados da nossa api
+
+# Correção dos erros que surgirão
+
+- É importante salientar que após todas as mudanças verificaremos que os testes que realizamos anteriormente não funcionarão mais devido a um erro de circulo de http, para corrigir isso devemos utilizar o HttpClientTesteModule, basicamente importamos este método dentro do spec do nosso componente principal e se houver algum componente que seja filho e esteja dando erro também importaremos ele lá.
+
+- Começaremos dentro do spec do componente criando a variavel que recebe nosso service e importando ele:
+
+  import { ListInvestimentsService } from '../../services/list-investiments.service';
+  let service: ListInvestimentsService;
+  service = TestBed.inject(ListInvestimentsService);
+
+- Para começar o teste iremos criar o espião que irá sempre "espionar" nosso mockList:
+  spyOn(service, 'list').and.returnValue(of(mockList));
+
+lembrando que o of é um parametro da biblioteca rxjs e deve ser importado.
+import { of } from 'rxjs/internal/observable/of';
+
+- Apartir dai criamos um teste para realizar a verificação se os dados estão sendo trocados
+
+  it('(U) should list investiments', () => {
+  spyOn(service, 'list').and.returnValue(of(mockList));
+
+  // aqui coloco para no ngOnInit o spyOn vai realizar o retorno da nossa lista
+  component.ngOnInit();
+  fixture.detectChanges();
+  expect(service.list).toHaveBeenCalledWith();
+
+- Depois disso faço os expect para testar o que quero
+  it('(U) should list investiments', () => {
+  spyOn(service, 'list').and.returnValue(of(mockList));
+
+  // aqui coloco para no ngOnInit o spyOn vai realizar o retorno da nossa lista
+  component.ngOnInit();
+  fixture.detectChanges();
+  expect(service.list).toHaveBeenCalledWith();
+  expect(component.investiments.length).toBe(6);
+  expect(component.investiments[4].value).toEqual(10);
+  expect(component.investiments[0].name).toEqual('Banco 1');
+  });
+
+  - No segundo teste que é o teste de interface basicamente nos iremos apenas realizar o spyon chamar o ngOnInit e trocar os valores que estavam antes:
+
+    it('(I) should list investiments HTML', () => {
+    spyOn(service, 'list').and.returnValue(of(mockList));
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    let investiments =
+    fixture.debugElement.nativeElement.querySelectorAll('.list-itens');
+    expect(investiments.length).toBe(6);
+    expect(investiments[0].textContent.trim()).toEqual('Banco 1 - 100');
+    });
